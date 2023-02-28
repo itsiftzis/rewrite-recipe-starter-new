@@ -15,21 +15,27 @@
  */
 package com.oddschecker;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
+import org.openrewrite.SourceFile;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.JavaTemplate;
+import org.openrewrite.java.search.FindImports;
 import org.openrewrite.java.tree.J.MethodDeclaration;
-import org.openrewrite.java.tree.J.Modifier;
-import org.openrewrite.java.tree.J.Modifier.Type;
+import org.openrewrite.java.tree.JavaSourceFile;
 
 import static java.util.stream.Collectors.toList;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class FinalizeMethodArguments extends Recipe {
+
+    private static final String PACKAGE_PREFIX_NAME = "com.oddschecker.*";
 
     @Override
     public String getDisplayName() {
@@ -42,33 +48,36 @@ public class FinalizeMethodArguments extends Recipe {
     }
 
     @Override
-    protected TreeVisitor<?, ExecutionContext> getSingleSourceApplicableTest() {
-        // Any change to the AST made by the applicability test will lead to the visitor returned by Recipe.getVisitor() being applied
-        // No changes made by the applicability test will be kept
-        return new JavaIsoVisitor<ExecutionContext>() {
-            @Override
-            public MethodDeclaration visitMethodDeclaration(final MethodDeclaration method, final ExecutionContext executionContext) {
-                return super.visitMethodDeclaration(method, executionContext);
-            }
-        };
+    protected List<SourceFile> visit(List<SourceFile> before, ExecutionContext ctx) {
+        return before.stream().filter(sourceFile -> sourceFile instanceof JavaSourceFile).collect(toList());
     }
 
     @Override
-    protected TreeVisitor<?, ExecutionContext> getVisitor() {
-        // To avoid stale state persisting between cycles, getVisitor() should always return a new instance of its visitor
+    protected TreeVisitor<?, ExecutionContext> getSingleSourceApplicableTest() {
+        // This optimization means that your visitor will only run if the source file
+        // has an import of a specific package
+        return new FindImports(PACKAGE_PREFIX_NAME).getVisitor();
+    }
+
+    // OpenRewrite provides a managed environment in which it discovers, instantiates, and wires configuration into Recipes.
+    // This recipe has no configuration and delegates to its visitor when it is run.
+    @Override
+    protected JavaIsoVisitor<ExecutionContext> getVisitor() {
         return new JavaIsoVisitor<ExecutionContext>() {
             @Override
-            public MethodDeclaration visitMethodDeclaration(final MethodDeclaration method, final ExecutionContext executionContext) {
-                return method.withModifiers(method.getModifiers().stream()
-                    .map(this::addFinalModifier)
-                    .collect(toList()));
-            }
-
-            private Modifier addFinalModifier(final Modifier modifier) {
-                if (!modifier.getType().equals(Type.Final)) {
-                    return new Modifier(modifier.getId(), modifier.getPrefix(), modifier.getMarkers(), Type.Final, modifier.getAnnotations());
+            public MethodDeclaration visitMethodDeclaration(MethodDeclaration methodDeclaration, ExecutionContext executionContext) {
+                if (methodDeclaration.getParameters().stream().map(Object::toString).allMatch(param -> param.startsWith("final"))) {
+                    return methodDeclaration;
                 }
-                return modifier;
+                JavaTemplate addsFinalModifier = JavaTemplate.builder(this::getCursor, methodDeclaration.getParameters().stream().map(p -> "final " + p.toString()).collect(Collectors.joining(", ")))
+                    .build();
+                methodDeclaration = methodDeclaration.withTemplate(addsFinalModifier,
+                    methodDeclaration.getCoordinates().replaceParameters());
+
+                // Safe to assert since we just added a body to the method
+                assert methodDeclaration.getBody() != null;
+
+                return methodDeclaration;
             }
         };
     }

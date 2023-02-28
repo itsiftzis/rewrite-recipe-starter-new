@@ -31,7 +31,7 @@ java {
 
 // Set as appropriate for your organization
 group = "com.oddschecker"
-description = "Rewrite recipee for finalizing method arguments"
+description = "Rewrite recipe for finalizing method arguments"
 
 repositories {
     mavenLocal()
