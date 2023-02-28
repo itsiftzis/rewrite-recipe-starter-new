@@ -1,6 +1,5 @@
-package com.oddschecker;
+package org.openrewrite.java.cleanup;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -14,14 +13,13 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
         spec.recipe(new FinalizeMethodArguments()).cycles(2);
     }
 
-    @Disabled
+    //    @Disabled
     @Test
     void replaceWithFinalModifier() {
         rewriteRun(
             java(
                 """
                         package com.test;
-                        import com.oddschecker.test;
                         
                         class TestClass {
                         
@@ -32,7 +30,6 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
                     """,
                 """
                         package com.test;
-                        import com.oddschecker.test;
                         
                         class TestClass {
                         

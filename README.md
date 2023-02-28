@@ -36,7 +36,7 @@ In a Maven project's pom.xml, make your recipe module a plugin dependency:
         <version>4.38.0</version>
         <configuration>
           <activeRecipes>
-            <recipe>com.oddschecker.FinalizeMethodArguments</recipe>
+            <recipe>org.openrewrite.java.cleanup.FinalizeMethodArguments</recipe>
           </activeRecipes>
         </configuration>
         <dependencies>

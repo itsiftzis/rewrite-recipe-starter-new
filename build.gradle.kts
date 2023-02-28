@@ -30,7 +30,7 @@ java {
 }
 
 // Set as appropriate for your organization
-group = "com.oddschecker"
+group = "org.openrewrite.java.cleanup"
 description = "Rewrite recipe for finalizing method arguments"
 
 repositories {
