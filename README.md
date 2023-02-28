@@ -24,29 +24,31 @@ This will publish to your local maven repository, typically under `~/.m2/reposit
 Replace the groupId, artifactId, recipe name, and version in the below snippets with the ones that correspond to your recipe.
 
 In a Maven project's pom.xml, make your recipe module a plugin dependency:
+
 ```xml
+
 <project>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.openrewrite.maven</groupId>
-                <artifactId>rewrite-maven-plugin</artifactId>
-                <version>4.38.0</version>
-                <configuration>
-                    <activeRecipes>
-                        <recipe>com.yourorg.NoGuavaListsNewArrayList</recipe>
-                    </activeRecipes>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.yourorg</groupId>
-                        <artifactId>rewrite-recipe-starter</artifactId>
-                        <version>0.1.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openrewrite.maven</groupId>
+        <artifactId>rewrite-maven-plugin</artifactId>
+        <version>4.38.0</version>
+        <configuration>
+          <activeRecipes>
+            <recipe>com.oddschecker.FinalizeMethodArguments</recipe>
+          </activeRecipes>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.oddschecker</groupId>
+            <artifactId>rewrite-recipe-starter</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ```
 

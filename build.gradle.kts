@@ -30,8 +30,8 @@ java {
 }
 
 // Set as appropriate for your organization
-group = "com.yourorg"
-description = "Rewrite recipes."
+group = "com.oddschecker"
+description = "Rewrite recipee for finalizing method arguments"
 
 repositories {
     mavenLocal()
