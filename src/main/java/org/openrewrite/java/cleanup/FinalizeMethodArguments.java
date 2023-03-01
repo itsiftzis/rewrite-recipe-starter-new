@@ -70,6 +70,6 @@ public class FinalizeMethodArguments extends Recipe {
     }
 
     private boolean isEmpty(final List<Statement> parameters) {
-        return !parameters.isEmpty() && parameters.size() == 1 && (parameters.get(0) instanceof Empty);
+        return parameters.size() == 1 && (parameters.get(0) instanceof Empty);
     }
 }
