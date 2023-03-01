@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.SourceFile;
@@ -63,13 +64,8 @@ public class FinalizeMethodArguments extends Recipe {
                     if (p instanceof VariableDeclarations) {
                         VariableDeclarations variableDeclarations = (VariableDeclarations) p;
                         if (variableDeclarations.getModifiers().isEmpty()) {
-                            variableDeclarations = variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
-                                Space.build("",
-                                    emptyList()),
-                                Markers.EMPTY,
-                                Type.Final,
-                                emptyList())));
-                            variableDeclarations = variableDeclarations.withTypeExpression(variableDeclarations.getTypeExpression().withPrefix(Space.build(" ", emptyList())));
+                            variableDeclarations = updateModifiers(variableDeclarations);
+                            variableDeclarations = updateDeclarations(variableDeclarations);
                             list.add(variableDeclarations);
                         }
                     }
@@ -86,14 +82,28 @@ public class FinalizeMethodArguments extends Recipe {
         };
     }
 
+    @NotNull
+    private static VariableDeclarations updateDeclarations(final VariableDeclarations variableDeclarations) {
+        return variableDeclarations.withTypeExpression(variableDeclarations.getTypeExpression() != null ? variableDeclarations.getTypeExpression().withPrefix(Space.build(" ", emptyList())) : null);
+    }
+
+    @NotNull
+    private static VariableDeclarations updateModifiers(final VariableDeclarations variableDeclarations) {
+        return variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
+            Space.build("",
+                emptyList()),
+            Markers.EMPTY,
+            Type.Final,
+            emptyList())));
+    }
+
     private boolean hasFinalModifiers(final List<Statement> parameters) {
         return parameters.stream().allMatch(p -> {
             if (p instanceof VariableDeclarations) {
-                if (!((VariableDeclarations) p).getModifiers().isEmpty()
-                    && ((VariableDeclarations) p).getModifiers().stream()
-                    .allMatch(m -> m.getType().equals(Type.Final))) {
-                    return true;
-                }
+                final List<Modifier> modifiers = ((VariableDeclarations) p).getModifiers();
+                return !modifiers.isEmpty()
+                    && modifiers.stream()
+                    .allMatch(m -> m.getType().equals(Type.Final));
             }
             return false;
         });
