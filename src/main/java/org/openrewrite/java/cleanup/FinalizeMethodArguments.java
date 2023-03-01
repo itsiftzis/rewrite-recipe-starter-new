@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 the original author or authors.
+ * Copyright 2023 the original author or authors.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
  * <p>
@@ -13,7 +13,6 @@ package org.openrewrite.java.cleanup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.SourceFile;
@@ -81,12 +80,10 @@ public class FinalizeMethodArguments extends Recipe {
         }
     }
 
-    @NotNull
     private static VariableDeclarations updateDeclarations(final VariableDeclarations variableDeclarations) {
         return variableDeclarations.withTypeExpression(variableDeclarations.getTypeExpression() != null ? variableDeclarations.getTypeExpression().withPrefix(Space.build(" ", emptyList())) : null);
     }
 
-    @NotNull
     private static VariableDeclarations updateModifiers(final VariableDeclarations variableDeclarations) {
         return variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
             Space.build("",
