@@ -11,7 +11,6 @@
 package org.openrewrite.java.cleanup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,6 @@ import org.openrewrite.Recipe;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
 import org.openrewrite.java.JavaIsoVisitor;
-import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.J.Empty;
 import org.openrewrite.java.tree.J.MethodDeclaration;
 import org.openrewrite.java.tree.J.Modifier;
@@ -29,7 +27,6 @@ import org.openrewrite.java.tree.J.VariableDeclarations;
 import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.java.tree.Statement;
-import org.openrewrite.java.tree.TextComment;
 import org.openrewrite.marker.Markers;
 
 import static java.util.Collections.emptyList;
@@ -60,16 +57,7 @@ public class FinalizeMethodArguments extends Recipe {
                     return declarations;
                 }
                 List<Statement> list = new ArrayList<>();
-                declarations.getParameters().forEach(p -> {
-                    if (p instanceof VariableDeclarations) {
-                        VariableDeclarations variableDeclarations = (VariableDeclarations) p;
-                        if (variableDeclarations.getModifiers().isEmpty()) {
-                            variableDeclarations = updateModifiers(variableDeclarations);
-                            variableDeclarations = updateDeclarations(variableDeclarations);
-                            list.add(variableDeclarations);
-                        }
-                    }
-                });
+                declarations.getParameters().forEach(p -> updateFields(list, p));
                 declarations = declarations.withParameters(list);
                 return declarations;
             }
@@ -80,6 +68,17 @@ public class FinalizeMethodArguments extends Recipe {
             }
 
         };
+    }
+
+    private static void updateFields(final List<Statement> list, final Statement p) {
+        if (p instanceof VariableDeclarations) {
+            VariableDeclarations variableDeclarations = (VariableDeclarations) p;
+            if (variableDeclarations.getModifiers().isEmpty()) {
+                variableDeclarations = updateModifiers(variableDeclarations);
+                variableDeclarations = updateDeclarations(variableDeclarations);
+                list.add(variableDeclarations);
+            }
+        }
     }
 
     @NotNull
