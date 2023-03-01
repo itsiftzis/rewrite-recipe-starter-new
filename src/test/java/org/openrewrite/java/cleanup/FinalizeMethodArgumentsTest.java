@@ -10,7 +10,7 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new FinalizeMethodArguments()).cycles(2);
+        spec.recipe(new FinalizeMethodArguments());
     }
 
     @Test
