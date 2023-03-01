@@ -64,16 +64,16 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
         rewriteRun(
             java(
                 """
-                        package com.oddschecker.responsive.utils.subevent;
+                        package responsive.utils.subevent;
                          
-                         import com.oddschecker.responsive.enums.subevent.SubeventTypes;
-                         import com.oddschecker.responsive.model.dto.card.SubEvent;
+                         import responsive.enums.subevent.SubeventTypes;
+                         import responsive.model.dto.card.SubEvent;
                          import java.util.List;
                          import org.springframework.beans.factory.annotation.Value;
                          import org.springframework.stereotype.Component;
                          
-                         import static com.oddschecker.responsive.enums.matchdata.MatchDataTitleSeparator.AT;
-                         import static com.oddschecker.responsive.enums.matchdata.MatchDataTitleSeparator.VS;
+                         import static responsive.enums.matchdata.MatchDataTitleSeparator.AT;
+                         import static responsive.enums.matchdata.MatchDataTitleSeparator.VS;
                          import static java.lang.String.format;
                          import static org.apache.commons.lang3.StringUtils.splitByWholeSeparator;
                          
@@ -87,7 +87,7 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
                              private final List<Integer> categoryGroupIdForChangeSubeventName;
                          
                              public SubeventUtils(
-                                     @Value("#{'${com.oddschecker.responsive.category.group.id.change.subevent.name}'.split(',')}")  final List<Integer> categoryGroupIdForChangeSubeventName) {
+                                     @Value("#{'${responsive.category.group.id.change.subevent.name}'.split(',')}")  final List<Integer> categoryGroupIdForChangeSubeventName) {
                                  this.categoryGroupIdForChangeSubeventName = categoryGroupIdForChangeSubeventName;
                              }
                          
