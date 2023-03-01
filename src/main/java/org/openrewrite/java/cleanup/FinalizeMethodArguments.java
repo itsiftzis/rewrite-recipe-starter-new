@@ -28,6 +28,7 @@ import org.openrewrite.java.tree.J.VariableDeclarations;
 import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.java.tree.Statement;
+import org.openrewrite.java.tree.TextComment;
 import org.openrewrite.marker.Markers;
 
 import static java.util.Collections.emptyList;
@@ -68,6 +69,7 @@ public class FinalizeMethodArguments extends Recipe {
                                 Markers.EMPTY,
                                 Type.Final,
                                 emptyList())));
+                            variableDeclarations = variableDeclarations.withTypeExpression(variableDeclarations.getTypeExpression().withPrefix(Space.build(" ", emptyList())));
                             list.add(variableDeclarations);
                         }
                     }
