@@ -22,7 +22,7 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
                         
                         class TestClass {
                         
-                            private void getAccaCouponData(Object responsiveRequestConfig, Object card) {
+                            private void getAccaCouponData(String responsiveRequestConfig, String card) {
                              
                             }
                         }
@@ -32,7 +32,7 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
                         
                         class TestClass {
                         
-                            private void getAccaCouponData(final Object responsiveRequestConfig, final Object card) {
+                            private void getAccaCouponData(finalString responsiveRequestConfig, finalString card) {
                              
                             }
                         }

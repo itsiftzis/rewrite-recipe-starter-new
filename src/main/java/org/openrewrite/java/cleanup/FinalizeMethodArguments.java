@@ -10,19 +10,27 @@
  **/
 package org.openrewrite.java.cleanup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.SourceFile;
+import org.openrewrite.Tree;
 import org.openrewrite.java.JavaIsoVisitor;
-import org.openrewrite.java.JavaTemplate;
+import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.J.Empty;
 import org.openrewrite.java.tree.J.MethodDeclaration;
+import org.openrewrite.java.tree.J.Modifier;
 import org.openrewrite.java.tree.J.Modifier.Type;
 import org.openrewrite.java.tree.J.VariableDeclarations;
 import org.openrewrite.java.tree.JavaSourceFile;
+import org.openrewrite.java.tree.Space;
 import org.openrewrite.java.tree.Statement;
+import org.openrewrite.marker.Markers;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Finalize method arguments v2
@@ -49,11 +57,22 @@ public class FinalizeMethodArguments extends Recipe {
                 if (isEmpty(declarations.getParameters()) || hasFinalModifiers(declarations.getParameters())) {
                     return declarations;
                 }
-                JavaTemplate addsFinalModifier = JavaTemplate.builder(this::getCursor, declarations.getParameters().stream().map(p -> "final " + p.toString()).collect(Collectors.joining(", ")))
-                    .build();
-                declarations = declarations.withTemplate(addsFinalModifier,
-                    declarations.getCoordinates().replaceParameters());
-
+                List<Statement> list = new ArrayList<>();
+                declarations.getParameters().forEach(p -> {
+                    if (p instanceof VariableDeclarations) {
+                        VariableDeclarations variableDeclarations = (VariableDeclarations) p;
+                        if (variableDeclarations.getModifiers().isEmpty()) {
+                            variableDeclarations = variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
+                                Space.build("",
+                                    emptyList()),
+                                Markers.EMPTY,
+                                Type.Final,
+                                emptyList())));
+                            list.add(variableDeclarations);
+                        }
+                    }
+                });
+                declarations = declarations.withParameters(list);
                 return declarations;
             }
 
