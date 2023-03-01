@@ -42,6 +42,24 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
     }
 
     @Test
+    void replaceWithFinalModifierNoArguments() {
+        rewriteRun(
+            java(
+                """
+                        package com.test;
+                        
+                        class TestClass {
+                        
+                            private void getAccaCouponData() {
+                             
+                            }
+                        }
+                    """
+            )
+        );
+    }
+
+    @Test
     void doNotReplaceWithFinalModifier() {
         rewriteRun(
             java(

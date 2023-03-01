@@ -15,14 +15,18 @@
  **/
 package org.openrewrite.java.cleanup;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.SourceFile;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaTemplate;
+import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.J.Empty;
 import org.openrewrite.java.tree.J.MethodDeclaration;
 import org.openrewrite.java.tree.JavaSourceFile;
+import org.openrewrite.java.tree.Statement;
 
 /**
  * Finalize method arguments v2
@@ -46,7 +50,7 @@ public class FinalizeMethodArguments extends Recipe {
             public MethodDeclaration visitMethodDeclaration(MethodDeclaration methodDeclaration, ExecutionContext executionContext) {
                 MethodDeclaration declarations = super.visitMethodDeclaration(methodDeclaration, executionContext);
 
-                if (declarations.getParameters().stream().map(Object::toString).allMatch(param -> param.contains("final"))) {
+                if (isEmpty(declarations.getParameters()) || declarations.getParameters().stream().map(Object::toString).allMatch(param -> param.contains("final"))) {
                     return declarations;
                 }
                 JavaTemplate addsFinalModifier = JavaTemplate.builder(this::getCursor, declarations.getParameters().stream().map(p -> "final " + p.toString()).collect(Collectors.joining(", ")))
@@ -63,5 +67,9 @@ public class FinalizeMethodArguments extends Recipe {
             }
 
         };
+    }
+
+    private boolean isEmpty(final List<Statement> parameters) {
+        return !parameters.isEmpty() && parameters.size() == 1 && (parameters.get(0) instanceof Empty);
     }
 }
