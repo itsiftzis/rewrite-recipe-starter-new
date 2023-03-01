@@ -31,12 +31,12 @@ public class FinalizeMethodArguments extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Finalize local variables";
+        return "Finalize method arguments";
     }
 
     @Override
     public String getDescription() {
-        return "Adds the `final` modifier keyword to local variables which are not reassigned.";
+        return "Adds the `final` modifier keyword to method parameters.";
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FinalizeMethodArguments extends Recipe {
             public MethodDeclaration visitMethodDeclaration(MethodDeclaration methodDeclaration, ExecutionContext executionContext) {
                 MethodDeclaration declarations = super.visitMethodDeclaration(methodDeclaration, executionContext);
 
-                if (declarations.getParameters().stream().map(Object::toString).allMatch(param -> param.startsWith("final"))) {
+                if (declarations.getParameters().stream().map(Object::toString).allMatch(param -> param.contains("final"))) {
                     return declarations;
                 }
                 JavaTemplate addsFinalModifier = JavaTemplate.builder(this::getCursor, declarations.getParameters().stream().map(p -> "final " + p.toString()).collect(Collectors.joining(", ")))
