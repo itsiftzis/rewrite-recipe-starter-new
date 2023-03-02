@@ -14,6 +14,22 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
     }
 
     @Test
+    void doNotAddFinalIfAssigned() {
+        rewriteRun(
+            java(
+                """
+                      package a;
+                       class A {
+                           void SubeventUtils(String a) {
+                               a = "abc";
+                           }
+                       }
+                  """
+            )
+        );
+    }
+
+    @Test
     void replaceWithFinalModifier() {
         rewriteRun(
             java(
