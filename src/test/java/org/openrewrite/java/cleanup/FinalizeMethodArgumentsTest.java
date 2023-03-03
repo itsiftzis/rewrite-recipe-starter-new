@@ -30,6 +30,21 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
     }
 
     @Test
+    void doNotAddFinalIfInterface() {
+        rewriteRun(
+            java(
+                """
+                        package a;
+                         public interface MarketDeleteService {
+                            
+                              void deleteMarket(Long marketId, String deletionTimestamp);
+                            }
+                    """
+            )
+        );
+    }
+
+    @Test
     void replaceWithFinalModifier() {
         rewriteRun(
             java(
