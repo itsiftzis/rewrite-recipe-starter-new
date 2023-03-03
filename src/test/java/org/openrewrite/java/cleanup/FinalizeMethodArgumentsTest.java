@@ -18,13 +18,13 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
         rewriteRun(
             java(
                 """
-                      package a;
-                       class A {
-                           void SubeventUtils(String a) {
-                               a = "abc";
-                           }
-                       }
-                  """
+                        package a;
+                         class A {
+                             void SubeventUtils(String a) {
+                                 a = "abc";
+                             }
+                         }
+                    """
             )
         );
     }
@@ -67,6 +67,24 @@ class FinalizeMethodArgumentsTest implements RewriteTest {
                              
                             }
                         }
+                    """
+            )
+        );
+    }
+
+    @Test
+    void replaceWithFinalModifierWhenAnnotated() {
+        rewriteRun(
+            java(
+                """
+                    public class Test {
+                        public void test(@Override Integer test) {}
+                    }
+                    """,
+                """
+                    public class Test {
+                        public void test(@Override final Integer test) {}
+                    }
                     """
             )
         );

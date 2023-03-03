@@ -148,7 +148,7 @@ public class FinalizeMethodArguments extends Recipe {
         if (p instanceof VariableDeclarations) {
             VariableDeclarations variableDeclarations = (VariableDeclarations) p;
             if (variableDeclarations.getModifiers().isEmpty()) {
-                variableDeclarations = updateModifiers(variableDeclarations);
+                variableDeclarations = updateModifiers(variableDeclarations, !((VariableDeclarations) p).getLeadingAnnotations().isEmpty());
                 variableDeclarations = updateDeclarations(variableDeclarations);
                 list.add(variableDeclarations);
             }
@@ -159,7 +159,15 @@ public class FinalizeMethodArguments extends Recipe {
         return variableDeclarations.withTypeExpression(variableDeclarations.getTypeExpression() != null ? variableDeclarations.getTypeExpression().withPrefix(Space.build(" ", emptyList())) : null);
     }
 
-    private static VariableDeclarations updateModifiers(final VariableDeclarations variableDeclarations) {
+    private static VariableDeclarations updateModifiers(final VariableDeclarations variableDeclarations, final boolean leadingAnnotations) {
+        if (leadingAnnotations) {
+            return variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
+                Space.build("",
+                    emptyList()),
+                Markers.EMPTY,
+                Type.Final,
+                emptyList()).withPrefix(Space.build(" ", emptyList()))));
+        }
         return variableDeclarations.withModifiers(Collections.singletonList(new Modifier(Tree.randomId(),
             Space.build("",
                 emptyList()),
